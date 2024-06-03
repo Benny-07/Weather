@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react"
+import {useState} from "react"
 import "./App.css"
 import PropTypes from "prop-types"
 
@@ -23,14 +23,42 @@ import searchIcon from './assets/images/search.png'
 
 
 
-const WeatherDetails = ({icon, temp, city, country, lat, log, humidity, wind}) =>{
-  return (<>
+
+const WeatherDetails = ({icon, temp, city, country, lat, log, humidity, wind, timezone}) =>{
+
+  const getTime = (timezone) => {
+    const currentDate = new Date();
+    const utc = currentDate.getTime() + (currentDate.getTimezoneOffset() * 60000);
+    const localTime = new Date(utc + (1000 * timezone));
+    return localTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getDate = (timezone) => {
+    const currentDate = new Date();
+    const utc = currentDate.getTime() + (currentDate.getTimezoneOffset() * 60000);
+    const localDate = new Date(utc + (1000 * timezone));
+    return localDate.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+  const time = getTime(timezone);
+  const date = getDate(timezone);
+
+return (<>
     <div className="image"> 
       <img src={icon} alt="Image" />
     </div>
     <div className="temp">{temp}°C</div>
     <div className="location">{city}</div>
     <div className="country">{country}</div>
+    
+    <div className="element  date">
+        <p>Date:<span>{date}</span></p>
+        <p>TIme:<span>{time}</span></p>
+      </div>
     <div className="cord">
       <div>
         <span className="lat">Latitude </span>
@@ -79,14 +107,15 @@ WeatherDetails.propTypes = {
 export const App = () => {
 let api_key = "7ad1f7c00f3955fc087a9357db7978d6"
 
-const [text, setText] = useState("Chennai")
+const [text, setText] = useState("")
 
-const [icon, setIcon] = useState(snowIcon);
+const [icon, setIcon] = useState(sunIcon);
 const [temp, setTemp] = useState(0)
-const [city, setCity] = useState("Chennai")
+const [city, setCity] = useState("")
 const [country, setCountry] = useState("IN")
 const [lat, setLat] = useState(0)
 const [log, setLog] = useState(0)
+const [timezone, setTimeZone] = useState()
 
 const [humidity, setHumidity] = useState(0)
 const [wind, setWind] = useState(0)
@@ -123,6 +152,7 @@ const search = async () =>{
 
   let url = `https://api.openweathermap.org/data/2.5/weather?q=${text}&appid=${api_key}&units=Metric`
 
+
   try{
     let res = await fetch(url)
     let data = await res.json()
@@ -145,6 +175,7 @@ const search = async () =>{
     const weatherIconCode = data.weather[0].icon
     setIcon(weatherIconMap[weatherIconCode] || clearIcon)
     setCityNotFound(false)
+    setTimeZone(data.timezone)
 
   } catch (error){
     console.error("An error occured:", error.message)
@@ -164,10 +195,6 @@ const search = async () =>{
     }
   }
 
-  useEffect (function (){
-    search()
-  }, [])
-
   return (
     <>
       <div className="container">
@@ -182,7 +209,7 @@ const search = async () =>{
         { error && <div className="error-message">{error}</div>}
         { cityNotFound && <div className="city-not-found">City not found</div>}
         
-        { !loading && !cityNotFound && <WeatherDetails icon={icon} temp={temp} city={city} country={country} lat={lat} log={log} wind={wind} humidity={humidity} />}
+        { !loading && !cityNotFound && <WeatherDetails icon={icon} temp={temp} city={city} country={country} lat={lat} log={log} wind={wind} humidity={humidity} timezone={timezone} />}
         
       
         <p className="copyright"> Designed by <span>Benzz</span></p>
@@ -190,3 +217,5 @@ const search = async () =>{
     </>
   )
 }
+
+
