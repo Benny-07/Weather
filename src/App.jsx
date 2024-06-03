@@ -3,8 +3,8 @@ import "./App.css"
 import PropTypes from "prop-types"
 
 /*IMAGES*/
-import sunIcon from './assets/images/sun1.png'
-import moonIcon from './assets/images/moon1.png'
+import sunIcon from './assets/images/sun.jpg'
+import moonIcon from './assets/images/moon.png'
 import mistIcon from './assets/images/mist.png'
 import thunderIcon from './assets/images/thunder.png'
 import brokenCloudIcon from './assets/images/brokenclouds.png'
