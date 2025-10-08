@@ -151,6 +151,7 @@ const search = async () =>{
   setLoading(true)
 
   let url = `https://api.openweathermap.org/data/2.5/weather?q=${text}&appid=${api_key}&units=Metric`
+  console.log(url)
 
 
   try{
